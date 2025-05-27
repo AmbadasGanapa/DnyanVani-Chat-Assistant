@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+   <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+  <title>DnyanVani - A Personal ChatBot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-color: #f4f4f9;
+      --card-color: #ffffff;
+      --text-color: #333333;
+      --accent-color: #000c51;
+      --bot-bg: #f8f2f2;
+      --user-bg: #eeeeee;
+      --input-bg: #ffffff;
+    }
+
+    body.dark-mode {
+      --bg-color: #121212;
+      --card-color: #1e1e1e;
+      --text-color: #e0e0e0;
+      --accent-color: #484649;
+      --bot-bg: #263238;
+      --user-bg: #2e2d2d;
+      --input-bg: #2b2b2b;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #chatbox {
+      width: 95%;
+      max-width: 700px;
+      background-color: var(--card-color);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      height: 90vh;
+    }
+
+    .chat-header {
+      text-align: center;
+      padding: 16px;
+      margin: 0;
+      background-color: var(--accent-color);
+      color: white;
+      border-radius: 12px 12px 0 0;
+      position: relative;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: 2px solid white;
+      color: white;
+      padding: 4px 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    #messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .message {
+      padding: 12px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+      background-color: var(--card-color);
+      color: var(--text-color);
+    }
+
+    .user {
+      background-color: var(--user-bg);
+      align-self: flex-end;
+    }
+
+    .bot {
+      background-color: var(--bot-bg);
+      align-self: flex-start;
+    }
+
+    .input-area {
+      display: flex;
+      padding: 16px;
+      gap: 10px;
+      border-top: 1px solid #ccc;
+    }
+
+    textarea {
+      flex-grow: 1;
+      height: 40px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      resize: none;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--input-bg);
+      color: var(--text-color);
+    }
+
+    button {
+      padding: 12px 20px;
+      background-color: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #303f9f;
+    }
+
+    body.dark-mode button:hover {
+      background-color: #0d002a;
+    }
+
+    code {
+      background-color: rgba(0, 0, 0, 0.05);
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    pre > code {
+      display: block;
+      padding: 10px;
+      overflow-x: auto;
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .typing {
+      font-style: italic;
+      opacity: 0.6;
+    }
+ #welcome-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 2;
+  animation: fadeIn 1.5s ease-in-out;
+  color: var(--text-color);
+  padding: 20px;
+  max-width: 90%;
+}
+
+.animated-welcome {
+  font-size: 28px;
+  font-weight: bold;
+  line-height: 1.4;
+  background: linear-gradient(90deg, #0093E9, #80D0C7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fadeInScale 2s ease-in-out;
+}
+
+.animated-welcome small {
+  display: block;
+  margin-top: 10px;
+  font-size: 16px;
+  color: #aaa;
+}
+
+.brand {
+  background: linear-gradient(90deg, #ff6ec4, #7873f5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; transform: translate(-50%, -55%); }
+  100% { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.fade-out {
+  animation: fadeOut 0.8s forwards ease-in-out;
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+}
+
+  </style>
+</head>
+<body>
+  <div id="chatbox">
+    <h2 class="chat-header">
+      DnyanVani - AI Chat Assistant
+      <button class="toggle-btn" onclick="toggleTheme()">🌙</button>
+    </h2>
+ <div id="welcome-container">
+  <h1 class="animated-welcome">
+     Welcome to <span class="brand">DnyanVani</span><br>
+    <small>Ask me anything!</small>
+  </h1>
+</div>
+
+    <div id="messages"></div>
+
+    <div class="input-area">
+      <textarea id="user-input" placeholder="Ask me anything..."></textarea>
+      <button id="send-btn" onclick="sendMessage()">Send</button>
+      <button id="micBtn" title="Speak" style="margin-left: 5px;">🎤</button>
+     
+    </div>
+  </div>
+
+  
+ <script>
+  const micBtn = document.getElementById("micBtn");
+const micInput = document.getElementById("user-input");
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+
+recognition.lang = "en-US";
+recognition.interimResults = false;
+recognition.continuous = false;
+
+micBtn.onclick = () => {
+  recognition.start();
+  micBtn.textContent = "🎙️";
+};
+
+recognition.onresult = (event) => {
+  const transcript = event.results[0][0].transcript;
+  micInput.value = transcript;
+  micBtn.textContent = "🎤";
+};
+
+recognition.onerror = (e) => {
+  console.error("Speech recognition error:", e.error);
+  micBtn.textContent = "🎤";
+};
+
+recognition.onend = () => {
+  micBtn.textContent = "🎤";
+};
+
+ </script>
+<script>
+const messagesDiv = document.getElementById("messages");
+const input = document.getElementById("user-input");
+
+function addMessage(text, sender, isHTML = false) {
+  const msg = document.createElement("div");
+  msg.className = `message ${sender}`;
+  if (isHTML && sender === 'bot') {
+    animateHTMLTyping(msg, text);
+  } else {
+    msg.textContent = text;
+  }
+  messagesDiv.appendChild(msg);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+//voice output start here 
+
+//voice output end here 
+
+async function animateHTMLTyping(container, html) {
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = html;
+
+  async function typeNode(node, parent) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent;
+      for (let char of text) {
+        parent.appendChild(document.createTextNode(char));
+        await new Promise(resolve => setTimeout(resolve, 10));
+      }
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const el = document.createElement(node.tagName);
+      for (let attr of node.attributes) {
+        el.setAttribute(attr.name, attr.value);
+      }
+      parent.appendChild(el);
+      for (let child of node.childNodes) {
+        await typeNode(child, el);
+      }
+    }
+  }
+
+  for (let child of tempDiv.childNodes) {
+    await typeNode(child, container);
+  }
+
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+async function sendMessage() {
+  const message = input.value.trim();
+  if (!message) return;
+
+  // Fade out welcome message smoothly
+  const welcomeDiv = document.getElementById("welcome-container");
+  if (welcomeDiv) {
+    welcomeDiv.classList.add("fade-out");
+    setTimeout(() => welcomeDiv.style.display = "none", 800);
+  }
+
+  addMessage(message, "user");
+  input.value = "";
+
+  const loadingMsg = document.createElement("div");
+  loadingMsg.className = "message bot typing";
+  loadingMsg.textContent = "Processing...";
+  messagesDiv.appendChild(loadingMsg);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+  try {
+    const response = await fetch("/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ message })
+    });
+
+    if (!response.ok) throw new Error("Failed to fetch");
+
+    const data = await response.json();
+    const reply = data.reply || "Sorry, I didn't get that.";
+
+    loadingMsg.remove();
+    addMessage(reply, "bot", true);
+  } catch (error) {
+    loadingMsg.remove();
+    addMessage("⚠️ Oops! Something went wrong. Please try again.", "bot");
+    console.error(error);
+  }
+}
+
+
+input.addEventListener("keypress", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+function toggleTheme() {
+  document.body.classList.toggle("dark-mode");
+  localStorage.setItem("theme", document.body.classList.contains("dark-mode") ? "dark" : "light");
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.body.classList.add("dark-mode");
+  }
+
+});
+</script>
+</body>
+</html>
